@@ -10,3 +10,5 @@ I will not provide any support to convert and distribute audiobook if you are no
 This tool can help if you want listen your favorite audiobook : 
 * with a USB stick in your car
 * on your Linux distribution
+
+You will need your activation bytes from https://github.com/inAudible-NG/audible-activator
