@@ -1,0 +1,6 @@
+<span>
+
+   <p *ngIf="!(observableContent | async)" >chargement de {{filename}}</p>
+  <img *ngIf="(observableContent | async)"  [src]="'data:image/jpeg;base64,'+ (observableContent|async)"  />
+  <div class="plus">+1</div>
+</span>

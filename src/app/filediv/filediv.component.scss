@@ -1,0 +1,16 @@
+img {
+    height: 150px;
+}
+
+span {
+    position: relative;
+}
+
+.plus {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    font-family: 'Courier New', Courier, monospace;
+    color: white;
+    font-size: 2em;
+}
