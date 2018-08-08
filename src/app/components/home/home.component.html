@@ -1,12 +1,18 @@
-<form #f="ngForm" (ngSubmit)="onSubmit(f)">
+<!--<form #f="ngForm" (ngSubmit)="onSubmit(f)">
     <input type="file" #file ngModel name="directory" webkitdirectory directory (change)="onChange(file.files)"/>
     <input type="submit" value="let's go !"/>
     <input type="button" (click)="getPDF()" value="get pdf :)"/>
-  </form>
+  </form>-->
+  
+  
   
 
 <div class="container" id="images">
-  
+
+  <mat-card>
+      Hello world !
+  </mat-card>
+
   <app-filediv *ngFor="let file of files | async" filename="{{file}}" class="file">
   
   </app-filediv>

@@ -1,14 +1,15 @@
 // const fs = require('fs');
 // const remoteElec = require('electron').remote;
 // const electroFs = remoteElec.require('fs');
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 const { ipcRenderer } = window.require('electron');
 
 import { Component, OnInit, NgZone } from '@angular/core';
-import {NgForm} from '@angular/forms';
+import { NgForm } from '@angular/forms';
 
 import * as jsPDF from 'jspdf';
 import { Observable } from 'rxjs/Observable';
+import { ElectronService } from 'ngx-electron';
 
 @Component({
   selector: 'app-home',
@@ -17,22 +18,27 @@ import { Observable } from 'rxjs/Observable';
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private zone: NgZone) {
+  constructor(private zone: NgZone, private _electronService: ElectronService) {
     this.files = new BehaviorSubject([]);
     this.observableFiles = this.files.asObservable();
-    this.files.subscribe(function() {});
+    this.files.subscribe(function () { });
     this.zone = zone;
-   }
+  }
 
   public files: BehaviorSubject<any[]>;
   public observableFiles: Observable<any[]>;
 
   ngOnInit() {
+
+
+
     ipcRenderer.on('list-dir-reply', (event, arg) => {
       console.log(arg);
       this.files.next(arg);
-      this.zone.run(() => {});
+      this.zone.run(() => { });
     });
+
+    //this._electronService.shell.openExternal('https://github.com');
   }
 
   onSubmit(f: NgForm) {
@@ -59,7 +65,7 @@ export class HomeComponent implements OnInit {
       'width': 1400, // max width of content on PDF
     }, function(bla) {   doc.save('saveInCallback.pdf');
    }, 12);*/
-   window.print();
+    window.print();
     // doc.save('a4.pdf');
   }
 }

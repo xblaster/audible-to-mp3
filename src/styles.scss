@@ -2,6 +2,19 @@
 html, body {
   margin: 0;
   padding: 0;
-
+  background-color: #333;
   height: 100%;
 }
+
+
+@import '~@angular/material/theming';
+@include mat-core();
+
+$primary: mat-palette($mat-green, 900);
+$accent:  mat-palette($mat-amber, 500, A200, A400);
+$warn:    mat-palette($mat-red, 500);
+
+$theme: mat-dark-theme($primary, $accent, $warn);
+
+@include angular-material-theme($theme);
+/*@import "~@angular/material/prebuilt-themes/deeppurple-amber.css";*/
