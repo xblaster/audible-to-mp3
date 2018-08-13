@@ -91,9 +91,14 @@ const { ipcMain } = require('electron');
 
 ipcMain.on('get-chapters', (event, arg) => {
   exec('ffmpeg -i ' + '"' + arg + '"', (error, stdout, stderr) => {
-    console.log(error);
+    //console.log(error);
     console.log(stdout);
-    console.log(stderr);
+    //console.log(stderr);
+
+    const regxp = /.*Chapter #(\d+:\d+): start (\d+\.\d+), end (\d+\.\d+).*/g
+
+    event.sender.send('get-chapters-list', stderr.match(regxp));
+    console.log((stderr.match(regxp)));
   });
 });
 

@@ -19,22 +19,22 @@ import { ElectronService } from 'ngx-electron';
 export class HomeComponent implements OnInit {
 
   constructor(private zone: NgZone, private _electronService: ElectronService) {
-    this.files = new BehaviorSubject([]);
-    this.observableFiles = this.files.asObservable();
-    this.files.subscribe(function () { });
+    this.chapters = new BehaviorSubject([]);
+    this.observableFiles = this.chapters.asObservable();
+    this.chapters.subscribe(function () { });
     this.zone = zone;
   }
 
-  public files: BehaviorSubject<any[]>;
+  public chapters: BehaviorSubject<any[]>;
   public observableFiles: Observable<any[]>;
 
   ngOnInit() {
 
 
 
-    ipcRenderer.on('list-dir-reply', (event, arg) => {
+    ipcRenderer.on('get-chapters-list', (event, arg) => {
       console.log(arg);
-      this.files.next(arg);
+      this.chapters.next(arg);
       this.zone.run(() => { });
     });
 

@@ -15,7 +15,7 @@
   </mat-card>-->
 
   <mat-nav-list>
-      <mat-list-item *ngFor="let file of files | async">{{file}}</mat-list-item>
+      <mat-list-item *ngFor="let chapter of chapters | async">{{chapter | json }}</mat-list-item>
     </mat-nav-list>
   <!--<app-filediv *ngFor="let file of files | async" filename="{{file}}" class="file">
   
