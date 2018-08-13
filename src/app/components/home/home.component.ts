@@ -46,12 +46,14 @@ export class HomeComponent implements OnInit {
     console.log(f.valid);  // false
   }
 
-  onChange(files) {
+  onChange(file) {
     // console.log('on change !');
     // console.log(files[0].path);
 
-    const path = files[0].path;
-    ipcRenderer.send('list-dir', path);
+    //console.log(file);
+    const path = file[0].path;
+    console.log(path);
+    ipcRenderer.send('get-chapters', path);
 
     /*const myNotification = new Notification('Title', {
       body: 'Lorem Ipsum Dolor Sit Amet'

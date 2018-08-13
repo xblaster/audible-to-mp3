@@ -1,6 +1,7 @@
 import { app, BrowserWindow, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import { exec } from 'child_process';
 
 let win, serve;
 const args = process.argv.slice(1);
@@ -29,7 +30,8 @@ function createWindow() {
 
   if (serve) {
     require('electron-reload')(__dirname, {
-     electron: require(`${__dirname}/node_modules/electron`)});
+      electron: require(`${__dirname}/node_modules/electron`)
+    });
     win.loadURL('http://localhost:4200');
   } else {
     win.loadURL(url.format({
@@ -39,7 +41,7 @@ function createWindow() {
     }));
   }
 
-  
+
 
   win.webContents.openDevTools();
 
@@ -85,38 +87,48 @@ try {
 
 
 // In main process.
-const {ipcMain} = require('electron');
+const { ipcMain } = require('electron');
 
-ipcMain.on('list-dir', (event, arg) => {
-  const fs = require('fs');
-  console.log(arg);
-  fs.readdir(arg, function(err, dir) {
-    const res = [];
-    // event.sender.send('list-dir-reply', dir);
-    // event.sender.send('list-dir-reply', err);
-    for (const filePath of dir) {
-      res.push(arg + '\\' + filePath);
-    }
-    event.sender.send('list-dir-reply', res);
-
-    // event.sender.send('list-dir-reply', res);
+ipcMain.on('get-chapters', (event, arg) => {
+  exec('ffmpeg -i ' + '"' + arg + '"', (error, stdout, stderr) => {
+    console.log(error);
+    console.log(stdout);
+    console.log(stderr);
   });
 });
 
-ipcMain.on('get-base64-img', (event, img) => {
-  const fs = require('fs');
-  console.log(img);
-  fs.readFile(img, function(err, data) {
-    event.sender.send('get-base64-img-reply', {
-      filename: img,
-      content: Buffer.from(data).toString('base64')
+  ipcMain.on('list-dir', (event, arg) => {
+    const fs = require('fs');
+    console.log(arg);
+    fs.readdir(arg, function (err, dir) {
+      const res = [];
+      // event.sender.send('list-dir-reply', dir);
+      // event.sender.send('list-dir-reply', err);
+      for (const filePath of dir) {
+        if (filePath.endsWith('aax')) { //only show aax to convert
+          res.push(arg + '\\' + filePath);
+        }
+      }
+      event.sender.send('list-dir-reply', res);
+
+      // event.sender.send('list-dir-reply', res);
     });
   });
-});
+
+  ipcMain.on('get-base64-img', (event, img) => {
+    const fs = require('fs');
+    console.log(img);
+    fs.readFile(img, function (err, data) {
+      event.sender.send('get-base64-img-reply', {
+        filename: img,
+        content: Buffer.from(data).toString('base64')
+      });
+    });
+  });
 
 
 
-ipcMain.on('synchronous-message', (event, arg) => {
-  console.log(arg); // prints "ping"
-  event.returnValue = 'pong';
-});
+  ipcMain.on('synchronous-message', (event, arg) => {
+    console.log(arg); // prints "ping"
+    event.returnValue = 'pong';
+  });

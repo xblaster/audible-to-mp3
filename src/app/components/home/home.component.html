@@ -1,19 +1,23 @@
-<!--<form #f="ngForm" (ngSubmit)="onSubmit(f)">
-    <input type="file" #file ngModel name="directory" webkitdirectory directory (change)="onChange(file.files)"/>
-    <input type="submit" value="let's go !"/>
-    <input type="button" (click)="getPDF()" value="get pdf :)"/>
-  </form>-->
+<form #f="ngForm" (ngSubmit)="onSubmit(f)">
+    <button mat-stroked-button (click)="browseInput.click()">Browse directory</button>
+    <input style="display: none" #browseInput mat-button type="file" #file ngModel name="directory" (change)="onChange(file.files)"/>
+    <!--<button mat-stroked-button type="submit" color="primary">Discover</button>-->
+    <!--<input type="button" (click)="getPDF()" value="get pdf :)"/>-->
+  </form>
   
   
   
 
 <div class="container" id="images">
 
-  <mat-card>
+  <!--<mat-card>
       Hello world !
-  </mat-card>
+  </mat-card>-->
 
-  <app-filediv *ngFor="let file of files | async" filename="{{file}}" class="file">
+  <mat-nav-list>
+      <mat-list-item *ngFor="let file of files | async">{{file}}</mat-list-item>
+    </mat-nav-list>
+  <!--<app-filediv *ngFor="let file of files | async" filename="{{file}}" class="file">
   
-  </app-filediv>
+  </app-filediv>-->
 </div>

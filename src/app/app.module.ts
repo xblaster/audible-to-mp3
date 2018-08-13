@@ -23,9 +23,11 @@ import { HomeComponent } from './components/home/home.component';
 import { FiledivComponent } from './filediv/filediv.component';
 
 import {NgxElectronModule} from 'ngx-electron';
+import {MatButtonModule} from '@angular/material/button';
 
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatCardModule} from '@angular/material/card';
+import {MatListModule} from '@angular/material/list';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -47,7 +49,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppRoutingModule,
     MatCardModule,
     NgxElectronModule,
+    MatButtonModule,
     MatToolbarModule,
+    MatListModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
