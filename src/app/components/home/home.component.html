@@ -1,21 +1,35 @@
-<form #f="ngForm" (ngSubmit)="onSubmit(f)">
-    <button mat-stroked-button (click)="browseInput.click()">Browse directory</button>
-    <input style="display: none" #browseInput mat-button type="file" #file ngModel name="directory" (change)="onChange(file.files)"/>
-    <!--<button mat-stroked-button type="submit" color="primary">Discover</button>-->
-    <!--<input type="button" (click)="getPDF()" value="get pdf :)"/>-->
-  </form>
+
   
   
   
 
-<div class="container" id="images">
+<div class="container mat-typography" id="images">
+
+    <form #f="ngForm" (ngSubmit)="onSubmit(f)">
+        <button mat-stroked-button (click)="browseInput.click()">Browse file</button>
+        <input style="display: none" #browseInput mat-button type="file" #file ngModel name="directory" (change)="onChange(file.files)"/>
+        <!--<button mat-stroked-button type="submit" color="primary">Discover</button>-->
+        <!--<input type="button" (click)="getPDF()" value="get pdf :)"/>-->
+      </form>
 
   <!--<mat-card>
       Hello world !
   </mat-card>-->
 
+  <h1>{{(book | async)?.title}}</h1>
+  <h2>{{(book | async)?.author}}</h2>
+
+  <div *ngIf="book | async as bookAs">
+      {{slugify(bookAs.author)}}/{{slugify(bookAs.title)}}/
+  </div>
+
   <mat-nav-list>
-      <mat-list-item *ngFor="let chapter of chapters | async">{{chapter | json }}</mat-list-item>
+      <mat-list-item *ngFor="let chapter of chapters | async">
+        <b>{{chapter[1]}}</b>
+        {{(chapter[3] - chapter[2]) / 60 | number: '1.0-0'}}m
+        
+
+      </mat-list-item>
     </mat-nav-list>
   <!--<app-filediv *ngFor="let file of files | async" filename="{{file}}" class="file">
   

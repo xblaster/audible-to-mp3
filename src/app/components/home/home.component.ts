@@ -19,6 +19,7 @@ import { ElectronService } from 'ngx-electron';
 export class HomeComponent implements OnInit {
 
   constructor(private zone: NgZone, private _electronService: ElectronService) {
+    this.book = new BehaviorSubject(null);
     this.chapters = new BehaviorSubject([]);
     this.observableFiles = this.chapters.asObservable();
     this.chapters.subscribe(function () { });
@@ -26,7 +27,18 @@ export class HomeComponent implements OnInit {
   }
 
   public chapters: BehaviorSubject<any[]>;
+  public book: BehaviorSubject<any>;
   public observableFiles: Observable<any[]>;
+
+  slugify(text) {
+    return text.toString().toLowerCase()
+      .replace(/\s+/g, '_SPACE_')           // Replace spaces with -
+      .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+      .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+      //.replace(/^-+/, '')             // Trim - from start of text
+      //.replace(/-+$/, '');            // Trim - from end of text
+      .replace(/_SPACE_/g, ' ');           // Replace spaces with -
+  }
 
   ngOnInit() {
 
@@ -34,11 +46,11 @@ export class HomeComponent implements OnInit {
 
     ipcRenderer.on('get-chapters-list', (event, arg) => {
       console.log(arg);
-      this.chapters.next(arg);
+      this.book.next(arg);
+      this.chapters.next(arg.chapters);
       this.zone.run(() => { });
     });
 
-    //this._electronService.shell.openExternal('https://github.com');
   }
 
   onSubmit(f: NgForm) {
@@ -50,7 +62,7 @@ export class HomeComponent implements OnInit {
     // console.log('on change !');
     // console.log(files[0].path);
 
-    //console.log(file);
+    // console.log(file);
     const path = file[0].path;
     console.log(path);
     ipcRenderer.send('get-chapters', path);

@@ -2,6 +2,7 @@ import { app, BrowserWindow, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import { exec } from 'child_process';
+import { appendFile } from 'fs';
 
 let win, serve;
 const args = process.argv.slice(1);
@@ -85,55 +86,82 @@ try {
 
 
 
+function getChapters(ffmpegoutput) {
+  const regxp = /.*Chapter #(\d+:\d+): start (\d+\.\d+), end (\d+\.\d+).*/g;
+  let match = regxp.exec(ffmpegoutput);
+  const res = [];
+  while (match != null) {
+    res.push(match);
+    match = regxp.exec(ffmpegoutput);
+  }
+
+  return res;
+}
+
+function getTitle(ffmpegoutput) {
+  const regxp = /.*title.*: (.*)/g;
+  const match = regxp.exec(ffmpegoutput);
+
+  return match[1];
+}
+
+function getAuthor(ffmpegoutput) {
+  const regxp = /.*artist.*: (.*)/g;
+  const match = regxp.exec(ffmpegoutput);
+
+  return match[1];
+}
+
 
 // In main process.
 const { ipcMain } = require('electron');
 
 ipcMain.on('get-chapters', (event, arg) => {
   exec('ffmpeg -i ' + '"' + arg + '"', (error, stdout, stderr) => {
-    //console.log(error);
+
     console.log(stdout);
-    //console.log(stderr);
 
-    const regxp = /.*Chapter #(\d+:\d+): start (\d+\.\d+), end (\d+\.\d+).*/g
+    const res: any = {};
+    res.chapters = getChapters(stderr);
+    res.author = getAuthor(stderr);
+    res.title = getTitle(stderr);
+    event.sender.send('get-chapters-list', res);
 
-    event.sender.send('get-chapters-list', stderr.match(regxp));
-    console.log((stderr.match(regxp)));
   });
 });
 
-  ipcMain.on('list-dir', (event, arg) => {
-    const fs = require('fs');
-    console.log(arg);
-    fs.readdir(arg, function (err, dir) {
-      const res = [];
-      // event.sender.send('list-dir-reply', dir);
-      // event.sender.send('list-dir-reply', err);
-      for (const filePath of dir) {
-        if (filePath.endsWith('aax')) { //only show aax to convert
-          res.push(arg + '\\' + filePath);
-        }
+ipcMain.on('list-dir', (event, arg) => {
+  const fs = require('fs');
+  console.log(arg);
+  fs.readdir(arg, function (err, dir) {
+    const res = [];
+    // event.sender.send('list-dir-reply', dir);
+    // event.sender.send('list-dir-reply', err);
+    for (const filePath of dir) {
+      if (filePath.endsWith('aax')) { // only show aax to convert
+        res.push(arg + '\\' + filePath);
       }
-      event.sender.send('list-dir-reply', res);
+    }
+    event.sender.send('list-dir-reply', res);
 
-      // event.sender.send('list-dir-reply', res);
+    // event.sender.send('list-dir-reply', res);
+  });
+});
+
+ipcMain.on('get-base64-img', (event, img) => {
+  const fs = require('fs');
+  console.log(img);
+  fs.readFile(img, function (err, data) {
+    event.sender.send('get-base64-img-reply', {
+      filename: img,
+      content: Buffer.from(data).toString('base64')
     });
   });
-
-  ipcMain.on('get-base64-img', (event, img) => {
-    const fs = require('fs');
-    console.log(img);
-    fs.readFile(img, function (err, data) {
-      event.sender.send('get-base64-img-reply', {
-        filename: img,
-        content: Buffer.from(data).toString('base64')
-      });
-    });
-  });
+});
 
 
 
-  ipcMain.on('synchronous-message', (event, arg) => {
-    console.log(arg); // prints "ping"
-    event.returnValue = 'pong';
-  });
+ipcMain.on('synchronous-message', (event, arg) => {
+  console.log(arg); // prints "ping"
+  event.returnValue = 'pong';
+});
