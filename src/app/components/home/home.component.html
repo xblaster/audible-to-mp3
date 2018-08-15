@@ -12,6 +12,8 @@
         <!--<input type="button" (click)="getPDF()" value="get pdf :)"/>-->
       </form>
 
+      <button mat-stroked-button (click)="encode()">encode</button>
+
   <!--<mat-card>
       Hello world !
   </mat-card>-->
@@ -25,8 +27,8 @@
 
   <mat-nav-list>
       <mat-list-item *ngFor="let chapter of chapters | async">
-        <b>{{chapter[1]}}</b>
-        {{(chapter[3] - chapter[2]) / 60 | number: '1.0-0'}}m
+        <b>{{chapter.name}}</b>
+        {{(chapter.end - chapter.start) / 60 | number: '1.0-0'}}m
         
 
       </mat-list-item>

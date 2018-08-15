@@ -23,12 +23,15 @@ export class HomeComponent implements OnInit {
     this.chapters = new BehaviorSubject([]);
     this.observableFiles = this.chapters.asObservable();
     this.chapters.subscribe(function () { });
+    this.syncChap = [];
     this.zone = zone;
   }
 
   public chapters: BehaviorSubject<any[]>;
   public book: BehaviorSubject<any>;
   public observableFiles: Observable<any[]>;
+  private syncChap = [];
+  private inPath = '';
 
   slugify(text) {
     return text.toString().toLowerCase()
@@ -48,9 +51,34 @@ export class HomeComponent implements OnInit {
       console.log(arg);
       this.book.next(arg);
       this.chapters.next(arg.chapters);
+      this.syncChap = arg.chapters;
       this.zone.run(() => { });
     });
 
+  }
+
+  asyEncode(chapter): Promise<string> {
+    const p = new Promise<string>(resolve => {
+      ipcRenderer.send('encode-chapter', chapter);
+      ipcRenderer.on('encode-chapter-ok', (event, arg) => {
+        resolve(arg);
+      });
+    });
+
+    return p;
+
+  }
+
+  async encode() {
+    console.log('encode');
+    console.log(this.syncChap);
+    for (const chapter of this.syncChap) {
+      const cloned = Object.assign({}, chapter);
+      cloned.in = this.inPath;
+      cloned.out = this.slugify(chapter.name) + '.mp3';
+      console.log(cloned);
+      await this.asyEncode(chapter);
+    }
   }
 
   onSubmit(f: NgForm) {
@@ -64,6 +92,7 @@ export class HomeComponent implements OnInit {
 
     // console.log(file);
     const path = file[0].path;
+    this.inPath = path;
     console.log(path);
     ipcRenderer.send('get-chapters', path);
 

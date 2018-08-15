@@ -91,7 +91,7 @@ function getChapters(ffmpegoutput) {
   let match = regxp.exec(ffmpegoutput);
   const res = [];
   while (match != null) {
-    res.push(match);
+    res.push({start: match[2], end: match[3], name: match[1]});
     match = regxp.exec(ffmpegoutput);
   }
 
@@ -126,6 +126,26 @@ ipcMain.on('get-chapters', (event, arg) => {
     res.author = getAuthor(stderr);
     res.title = getTitle(stderr);
     event.sender.send('get-chapters-list', res);
+
+  });
+});
+
+ipcMain.on('encode-chapter', (event, arg) => {
+  const command = [
+    '-y',
+    '-activation_bytes', '0e4a8109',
+    '-i', '"' + arg.in + '"',
+    '-ab', '320k',
+    '-ss', arg.start,
+    '-to', arg.end,
+    '-vn',
+    '"' + arg.out + '"'];
+  console.log(command.join(' '));
+  exec(command.join(' '), (error, stdout, stderr) => {
+
+    if (!error) {
+      event.sender.send('result-chapter', stdout);
+    }
 
   });
 });
