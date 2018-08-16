@@ -1,12 +1,13 @@
 {
-  "productName": "angular-electron",
+  "productName": "audible-to-mp3",
+  "extraFiles": ["./ffmpeg.exe"],
   "directories": {
     "output": "app-builds"
   },
   "win": {
     "icon": "dist",
     "target": [
-      "portable"
+      "nsis"
     ]
   },
   "mac": {

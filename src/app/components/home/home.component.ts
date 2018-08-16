@@ -34,6 +34,7 @@ export class HomeComponent implements OnInit {
   public observableFiles: Observable<any[]>;
   private syncChap = [];
   private inPath = '';
+  private targetDir;
 
   slugify(text) {
     return text.toString().toLowerCase()
@@ -78,13 +79,13 @@ export class HomeComponent implements OnInit {
 
   }
 
-  getOutFilename(chapter, i) {
+  public getOutFilename(chapter, i) {
     console.log(this.book);
     console.log(this.syncBook);
 
     const numChapter = (i + '').padStart(4, '0');
 
-    return this.slugify(this.syncBook.author) + '/' + this.slugify(this.syncBook.title) + '/'
+    return this.targetDir + '\\' + this.slugify(this.syncBook.author) + '/' + this.slugify(this.syncBook.title) + '/'
       + numChapter + '-' + this.slugify(chapter.name) + '.mp3';
   }
 
@@ -131,6 +132,15 @@ export class HomeComponent implements OnInit {
     /*const myNotification = new Notification('Title', {
       body: 'Lorem Ipsum Dolor Sit Amet'
     });*/
+  }
+
+  onChangeTargetDir(file) {
+    // console.log('on change !');
+    // console.log(files[0].path);
+
+    // console.log(file);
+    const path = file[0].path;
+    this.targetDir = path;
   }
 
   getPDF() {

@@ -1,51 +1,90 @@
-<div class="container mat-typography" id="images">
+<div class="container mat-typography" id="images" fxLayout="row" fxLayoutGap="3em">
 
-  <form #f="ngForm" (ngSubmit)="onSubmit(f)">
-    <button mat-stroked-button (click)="browseInput.click()">Browse file</button>
-    <input style="display: none" #browseInput mat-button type="file" #file ngModel name="directory" (change)="onChange(file.files)"
-    />
-    <!--<button mat-stroked-button type="submit" color="primary">Discover</button>-->
-    <!--<input type="button" (click)="getPDF()" value="get pdf :)"/>-->
-  </form>
+  <mat-vertical-stepper [linear]="false" #stepper fxFlex="50">
+    <mat-step>
+      <ng-template matStepLabel>Source</ng-template>
+      <form #f="ngForm" (ngSubmit)="onSubmit(f)">
+        <button mat-stroked-button (click)="browseInput.click()">Browse file to encode</button>
+        <input style="display: none" #browseInput mat-button type="file" #file ngModel name="directory" (change)="onChange(file.files)"
+        />
+        <!--<button mat-stroked-button type="submit" color="primary">Discover</button>-->
+        <!--<input type="button" (click)="getPDF()" value="get pdf :)"/>-->
+      </form>
 
-  <button mat-stroked-button (click)="encode()">encode</button>
+      <button mat-button matStepperNext>Next</button>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Destination</ng-template>
+      <form #f="ngForm" (ngSubmit)="onSubmit(f)">
+        <button mat-stroked-button (click)="browseInputTarget.click()">Browse target directory</button>
+        <input style="display: none" #browseInputTarget mat-button type="file" #fileTarget ngModel name="targetDirectory" webkitDirectory
+          (change)="onChangeTargetDir(fileTarget.files)" />
+        <!--<button mat-stroked-button type="submit" color="primary">Discover</button>-->
+        <!--<input type="button" (click)="getPDF()" value="get pdf :)"/>-->
+      </form>
+
+      <button mat-button matStepperNext>Next</button>
+    </mat-step>
+    <mat-step *ngIf="(chapters | async)?.length">
+      <ng-template matStepLabel>Encode</ng-template>
+      <div *ngIf="chapters | async as chaptersAs">
+        IN : {{inPath}}
+        <br/> OUT: {{getOutFilename(chaptersAs[0],0)}}
+        <br/>
+
+        <button mat-flat-button (click)="encode()">encode</button>
+      </div>
+    </mat-step>
+  </mat-vertical-stepper>
+
+
+
+
 
   <!--<mat-card>
       Hello world !
   </mat-card>-->
+  <div fxFlex="50">
+    <h1>{{(book | async)?.title}}</h1>
+    <h2>{{(book | async)?.author}}</h2>
 
-  <h1>{{(book | async)?.title}}</h1>
-  <h2>{{(book | async)?.author}}</h2>
-
-  <div *ngIf="book | async as bookAs">
-    {{slugify(bookAs.author)}}/{{slugify(bookAs.title)}}/
-  </div>
-
-  <div>
-    <div *ngFor="let chapter of chapters | async" fxLayout="row" style="padding-top: 0.2em; padding-bottom: 0.2em">
-
-      <div fxFlex="10">
-        
-
-        <b>{{chapter.name}}</b>
-        
-      </div>
-      <div fxFlex="10">
-          {{(chapter.end - chapter.start) / 60 | number: '1.0-0'}}m
-      </div>
-
-      <div fxFlex>
-        &nbsp;
-      </div>
-      <div>
-        <span *ngIf="chapter.inprocess"> &#9749;</span>
-        <span *ngIf="chapter.processed">&#9745;</span>
-      </div>
-
-
+    <div *ngIf="book | async as bookAs">
+      {{slugify(bookAs.author)}}/{{slugify(bookAs.title)}}/
     </div>
+
     <div>
-      <!--<app-filediv *ngFor="let file of files | async" filename="{{file}}" class="file">
+      <ng-container *ngFor="let chapter of chapters | async" style="padding-top: 0.2em; padding-bottom: 0.2em">
+        <div fxLayout="row" style="padding: 0.8em">
+          <div fxFlex="10">
+
+
+            <b>{{chapter.name}}</b>
+
+          </div>
+          <div fxFlex="10">
+            {{(chapter.end - chapter.start) / 60 | number: '1.0-0'}}m
+          </div>
+
+          <div fxFlex>
+            &nbsp;
+          </div>
+          <div>
+
+            <span *ngIf="chapter.inprocess"> 
+                <mat-icon>transform</mat-icon>
+            </span>
+            <span *ngIf="chapter.processed">
+              <mat-icon>done</mat-icon>
+            </span>
+          </div>
+        </div>
+        <mat-divider></mat-divider>
+
+
+      </ng-container>
+      <div>
+        <!--<app-filediv *ngFor="let file of files | async" filename="{{file}}" class="file">
   
   </app-filediv>-->
+      </div>
     </div>

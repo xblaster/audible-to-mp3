@@ -30,7 +30,9 @@ import {MatCardModule} from '@angular/material/card';
 import {MatListModule} from '@angular/material/list';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {FlexLayoutModule} from "@angular/flex-layout";
+import {MatIconModule} from '@angular/material/icon';
 
+import {MatStepperModule} from '@angular/material/stepper';
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -51,9 +53,11 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppRoutingModule,
     MatCardModule,
     NgxElectronModule,
+    MatStepperModule,
     MatButtonModule,
     MatToolbarModule,
     MatListModule,
+    MatIconModule,
     FlexLayoutModule,
     MatProgressSpinnerModule,
     TranslateModule.forRoot({
