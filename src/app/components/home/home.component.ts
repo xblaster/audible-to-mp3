@@ -107,6 +107,10 @@ export class HomeComponent implements OnInit {
 
       i++;
     }
+
+    const myNotification = new Notification('Title', {
+      body: 'completed conversion of ' + this.inPath
+    });
   }
 
   onSubmit(f: NgForm) {
