@@ -1,18 +1,14 @@
-
-  
-  
-  
-
 <div class="container mat-typography" id="images">
 
-    <form #f="ngForm" (ngSubmit)="onSubmit(f)">
-        <button mat-stroked-button (click)="browseInput.click()">Browse file</button>
-        <input style="display: none" #browseInput mat-button type="file" #file ngModel name="directory" (change)="onChange(file.files)"/>
-        <!--<button mat-stroked-button type="submit" color="primary">Discover</button>-->
-        <!--<input type="button" (click)="getPDF()" value="get pdf :)"/>-->
-      </form>
+  <form #f="ngForm" (ngSubmit)="onSubmit(f)">
+    <button mat-stroked-button (click)="browseInput.click()">Browse file</button>
+    <input style="display: none" #browseInput mat-button type="file" #file ngModel name="directory" (change)="onChange(file.files)"
+    />
+    <!--<button mat-stroked-button type="submit" color="primary">Discover</button>-->
+    <!--<input type="button" (click)="getPDF()" value="get pdf :)"/>-->
+  </form>
 
-      <button mat-stroked-button (click)="encode()">encode</button>
+  <button mat-stroked-button (click)="encode()">encode</button>
 
   <!--<mat-card>
       Hello world !
@@ -22,18 +18,34 @@
   <h2>{{(book | async)?.author}}</h2>
 
   <div *ngIf="book | async as bookAs">
-      {{slugify(bookAs.author)}}/{{slugify(bookAs.title)}}/
+    {{slugify(bookAs.author)}}/{{slugify(bookAs.title)}}/
   </div>
 
-  <mat-nav-list>
-      <mat-list-item *ngFor="let chapter of chapters | async">
-        <b>{{chapter.name}}</b>
-        {{(chapter.end - chapter.start) / 60 | number: '1.0-0'}}m
+  <div>
+    <div *ngFor="let chapter of chapters | async" fxLayout="row" style="padding-top: 0.2em; padding-bottom: 0.2em">
+
+      <div fxFlex="10">
         
 
-      </mat-list-item>
-    </mat-nav-list>
-  <!--<app-filediv *ngFor="let file of files | async" filename="{{file}}" class="file">
+        <b>{{chapter.name}}</b>
+        
+      </div>
+      <div fxFlex="10">
+          {{(chapter.end - chapter.start) / 60 | number: '1.0-0'}}m
+      </div>
+
+      <div fxFlex>
+        &nbsp;
+      </div>
+      <div>
+        <span *ngIf="chapter.inprocess"> &#9749;</span>
+        <span *ngIf="chapter.processed">&#9745;</span>
+      </div>
+
+
+    </div>
+    <div>
+      <!--<app-filediv *ngFor="let file of files | async" filename="{{file}}" class="file">
   
   </app-filediv>-->
-</div>
+    </div>

@@ -1,5 +1,4 @@
 import { app, BrowserWindow, screen } from 'electron';
-import * as path from 'path';
 import * as url from 'url';
 import { exec } from 'child_process';
 import { appendFile } from 'fs';
@@ -91,7 +90,7 @@ function getChapters(ffmpegoutput) {
   let match = regxp.exec(ffmpegoutput);
   const res = [];
   while (match != null) {
-    res.push({start: match[2], end: match[3], name: match[1]});
+    res.push({ start: match[2], end: match[3], name: match[1] });
     match = regxp.exec(ffmpegoutput);
   }
 
@@ -110,6 +109,40 @@ function getAuthor(ffmpegoutput) {
   const match = regxp.exec(ffmpegoutput);
 
   return match[1];
+}
+
+const fs = require('fs');
+const path = require('path');
+
+function mkDirByPathSync(targetDir, { isRelativeToScript = true } = {}) {
+  const sep = path.sep;
+  const initDir = path.isAbsolute(targetDir) ? sep : '';
+  //const baseDir = isRelativeToScript ? __dirname : '.';
+  const baseDir = isRelativeToScript ? __dirname : '.';
+
+  return targetDir.split(sep).reduce((parentDir, childDir) => {
+    const curDir = path.resolve(baseDir, parentDir, childDir);
+    try {
+      console.log('try creating ' + curDir);
+      fs.mkdirSync(curDir);
+    } catch (err) {
+      if (err.code === 'EEXIST') { // curDir already exists!
+        return curDir;
+      }
+
+      // To avoid `EISDIR` error on Mac and `EACCES`-->`ENOENT` and `EPERM` on Windows.
+      if (err.code === 'ENOENT') { // Throw the original parentDir error on curDir `ENOENT` failure.
+        throw new Error(`EACCES: permission denied, mkdir '${parentDir}'`);
+      }
+
+      const caughtErr = ['EACCES', 'EPERM', 'EISDIR'].indexOf(err.code) > -1;
+      if (!caughtErr || caughtErr && targetDir === curDir) {
+        throw err; // Throw if it's just the last created dir.
+      }
+    }
+
+    return curDir;
+  }, initDir);
 }
 
 
@@ -131,7 +164,14 @@ ipcMain.on('get-chapters', (event, arg) => {
 });
 
 ipcMain.on('encode-chapter', (event, arg) => {
-  const command = [
+
+  // create directory if not exist
+  const dirOut = path.dirname(arg.out);
+  mkDirByPathSync(path.resolve(dirOut, '..'));
+  mkDirByPathSync(dirOut);
+
+  // prepare ffmpeg command
+  const command = ['ffmpeg',
     '-y',
     '-activation_bytes', '0e4a8109',
     '-i', '"' + arg.in + '"',
@@ -143,15 +183,16 @@ ipcMain.on('encode-chapter', (event, arg) => {
   console.log(command.join(' '));
   exec(command.join(' '), (error, stdout, stderr) => {
 
+    console.log(error);
+    console.log(stderr);
     if (!error) {
-      event.sender.send('result-chapter', stdout);
+      event.sender.send('encode-chapter-ok', stdout);
     }
 
   });
 });
 
 ipcMain.on('list-dir', (event, arg) => {
-  const fs = require('fs');
   console.log(arg);
   fs.readdir(arg, function (err, dir) {
     const res = [];
@@ -169,7 +210,6 @@ ipcMain.on('list-dir', (event, arg) => {
 });
 
 ipcMain.on('get-base64-img', (event, img) => {
-  const fs = require('fs');
   console.log(img);
   fs.readFile(img, function (err, data) {
     event.sender.send('get-base64-img-reply', {
@@ -185,3 +225,4 @@ ipcMain.on('synchronous-message', (event, arg) => {
   console.log(arg); // prints "ping"
   event.returnValue = 'pong';
 });
+
