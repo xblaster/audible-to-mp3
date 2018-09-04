@@ -41,8 +41,8 @@ export class HomeComponent implements OnInit {
       .replace(/\s+/g, '_SPACE_')           // Replace spaces with -
       .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
       .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-      //.replace(/^-+/, '')             // Trim - from start of text
-      //.replace(/-+$/, '');            // Trim - from end of text
+      // .replace(/^-+/, '')             // Trim - from start of text
+      // .replace(/-+$/, '');            // Trim - from end of text
       .replace(/_SPACE_/g, ' ');           // Replace spaces with -
   }
 
@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     const that = this;
     this.book.subscribe(function (e) {
-      console.log("book subs");
+      console.log('book subs');
       that.syncBook = e;
     });
 
